@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import { body, validationResult } from "express-validator";
 
 // import functions
 import { appendFile, readFile } from "./helper.js";
@@ -22,7 +23,11 @@ app.get("/api/getEntries", (req, res) => {
 });
 
 // handle post request "/api/addEntry"
-app.post("/api/addEntry", (req, res) => {
+app.post("/api/addEntry", body("fname").isString(), (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() });
+	}
 	// extract content of post request from body
 	const data = req.body;
 	// add new Entries to entries.json
